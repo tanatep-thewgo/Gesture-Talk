@@ -42,20 +42,3 @@ model.
 **Browser app:** HTML, CSS, JavaScript, MediaPipe Tasks Vision, a hand-rolled feedforward neural
 network for inference.
 **Python pipeline:** OpenCV, MediaPipe, scikit-learn (KNeighborsClassifier), pandas.
-
-## Run the Python pipeline locally
-```bash
-pip install opencv-python mediapipe pandas scikit-learn joblib
-python python/collect_data.py     # collect labeled samples (repeat per letter)
-python python/train_model.py      # train and save sign_model.pkl
-python python/predict_sign.py     # live prediction from your webcam
-```
-
-## Run the browser app locally
-No build step needed:
-```bash
-git clone https://github.com/Apinyayaying/gesturetalk.git
-cd gesturetalk
-```
-Then open `index.html` in your browser (camera access requires either `localhost` or HTTPS, which
-GitHub Pages provides automatically).
