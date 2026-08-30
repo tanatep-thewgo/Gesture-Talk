@@ -21,7 +21,7 @@ recognition problem before building the browser version:
 
 | Script | What it does |
 |---|---|
-| [`python/collect_data.py`](python/collect_data.py) | Opens the webcam, extracts hand landmarks with MediaPipe, and appends labeled samples to a CSV |
+| [`collect_data.py`](collect_data.py) | Opens the webcam, extracts hand landmarks with MediaPipe, and appends labeled samples to a CSV |
 | [`python/train_model.py`](python/train_model.py) | Trains a K-Nearest-Neighbors classifier on the collected landmarks and saves it with `joblib` |
 | [`python/predict_sign.py`](python/predict_sign.py) | Runs the trained KNN model live against the webcam feed, showing the top-3 predicted letters with confidence bars |
 
