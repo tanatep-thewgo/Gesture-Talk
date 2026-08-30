@@ -23,7 +23,7 @@ recognition problem before building the browser version:
 |---|---|
 | [`collect_data.py`](collect_data.py) | Opens the webcam, extracts hand landmarks with MediaPipe, and appends labeled samples to a CSV |
 | [`train_model.py`](train_model.py) | Trains a K-Nearest-Neighbors classifier on the collected landmarks and saves it with `joblib` |
-| [`python/predict_sign.py`](python/predict_sign.py) | Runs the trained KNN model live against the webcam feed, showing the top-3 predicted letters with confidence bars |
+| [`predict_sign.py`](predict_sign.py) | Runs the trained KNN model live against the webcam feed, showing the top-3 predicted letters with confidence bars |
 
 The Python scripts and the browser app are two separate experiments on the same underlying idea
 (classifying hand landmarks into Thai finger-spelling letters) — the KNN version was my first
