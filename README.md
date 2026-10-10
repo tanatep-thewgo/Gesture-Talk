@@ -4,7 +4,7 @@ My senior project: a real-time Thai finger-spelling recognizer that runs entirel
 Point your webcam at your hand and it predicts which letter you're signing, live, with no server
 and no installation.
 
-🔗 **Live demo:** https://tanatep-thewgo.github.io/Gesture-Talk/
+🔗 **Live demo:** [https://tanatep-thewgo.github.io/Gesture-Talk/](https://tanatep-thewgo.github.io/gesturetalk/)
 *(needs a webcam; click "Start" and allow camera access)*
 
 ## How it works
