@@ -364,6 +364,20 @@
   .zoom-card img{ width:100%; max-height:52vh; object-fit:contain; display:block; }
   .zoom-card .zc-title{ font-family:'Kanit',sans-serif; font-weight:700; font-size:20px; margin-top:8px; }
   .zoom-card .zc-sub{ color:var(--muted); font-size:12.5px; margin-top:2px; }
+  .hand-chip{
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:'Kanit',sans-serif; font-weight:600; font-size:11.5px;
+    padding:3px 10px 3px 8px; border-radius:999px; margin-top:5px;
+    color:#fff;
+  }
+  .hand-chip::before{ content:attr(data-side); display:inline-grid; place-items:center;
+    width:15px; height:15px; border-radius:50%; background:rgba(255,255,255,0.28);
+    font-size:9.5px; font-weight:700; }
+  .tag-row{ display:flex; align-items:center; gap:8px; margin-top:3px; }
+  .tag-row .tag{ margin-top:0; }
+  .tag-row .hand-chip{ margin-top:0; }
+  .hand-chip.left{ background: var(--blue-deep); }
+  .hand-chip.right{ background: var(--ink); }
   .search-empty{ color: var(--muted); font-size: 13px; text-align:center; padding: 30px 10px; }
 
   /* ===== History view ===== */
@@ -677,7 +691,7 @@
 
 </div>
 
-<div class="zoom-overlay" id="zoomOverlay"><div class="zoom-card"><img id="zoomImg" alt=""><div class="zc-title" id="zoomTitle"></div><div class="zc-sub">แตะที่ว่างเพื่อปิด</div></div></div>
+<div class="zoom-overlay" id="zoomOverlay"><div class="zoom-card"><img id="zoomImg" alt=""><div class="zc-title" id="zoomTitle"></div><div id="zoomHand"></div><div class="zc-sub">แตะที่ว่างเพื่อปิด</div></div></div>
 
 <script type="module">
 import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
@@ -732,6 +746,13 @@ const THAI_WORD_LABELS = {
   thank_you: "ขอบคุณ"
 };
 const WORD_CONFIDENCE_THRESHOLD = 0.6;
+
+// Which hand each letter is signed with (model class -> 'left' | 'right')
+const LETTER_HAND = {
+  g:'left', b:'left', h:'left', p:'left', s:'left', t:'left', f:'left', d:'left',   // ก บ ห พ ส ต ฟ ด
+  l:'right', n:'right', m:'right', o:'right', r:'right', w:'right', y:'right'       // ล น ม อ ร ว ย
+};
+const HAND_LABEL = { left:'มือซ้าย', right:'มือขวา' };
 
 let currentMode = 'letter'; // 'letter' | 'word'
 let currentView = 'intro'; // 'intro' | 'home' | 'search' | 'history'
@@ -835,7 +856,8 @@ function renderPrediction(top3){
   } else {
     const text = labelText(currentMode, best.label);
     mainLetter.textContent = isWord ? '🤟' : text;
-    mainConf.textContent = (isWord ? text + ' · ' : '') + Math.round(best.prob*100) + '% มั่นใจ';
+    const handNote = (!isWord && LETTER_HAND[best.label]) ? ' · ' + HAND_LABEL[LETTER_HAND[best.label]] : '';
+    mainConf.textContent = (isWord ? text + ' · ' : '') + Math.round(best.prob*100) + '% มั่นใจ' + handNote;
     logHistory(currentMode, text);
   }
 
@@ -1016,7 +1038,7 @@ function buildSignIndex(){
   for(const cls of LETTER_MODEL.classes){
     if(cls === 'not_sign') continue;
     const th = THAI_LETTER_LABELS[cls] || cls.toUpperCase();
-    items.push({ type: 'letter', cls: cls, typeLabel: 'ตัวสะกด', badge: th, main: th + ' (' + cls.toUpperCase() + ')' });
+    items.push({ type: 'letter', cls: cls, hand: LETTER_HAND[cls] || '', typeLabel: 'ตัวสะกด', badge: th, main: th + ' (' + cls.toUpperCase() + ')' });
   }
   for(const cls of WORD_MODEL.classes){
     const th = THAI_WORD_LABELS[cls] || cls;
@@ -1029,7 +1051,7 @@ const SIGN_INDEX = buildSignIndex();
 function renderSearchResults(filter){
   const q = (filter || '').trim().toLowerCase();
   const matches = SIGN_INDEX.filter(item =>
-    !q || item.main.toLowerCase().includes(q) || item.type.includes(q)
+    !q || item.main.toLowerCase().includes(q) || item.type.includes(q) || (item.hand && HAND_LABEL[item.hand].includes(q))
   );
   if(matches.length === 0){
     searchResults.innerHTML = '<p class="search-empty">ไม่พบท่าทางที่ตรงกับคำค้นหา</p>';
@@ -1040,9 +1062,10 @@ function renderSearchResults(filter){
       <div class="search-badge">${item.badge}</div>
       <div class="search-item-text">
         <div class="main">${item.main}</div>
-        <div class="tag">${item.typeLabel}</div>
+        <div class="tag-row"><div class="tag">${item.typeLabel}</div>
+        ${item.hand ? `<span class="hand-chip ${item.hand}" data-side="${item.hand === 'left' ? 'L' : 'R'}">${HAND_LABEL[item.hand]}</span>` : ''}</div>
       </div>
-      ${item.cls && SIGN_IMAGES[item.cls] ? `<img class="sign-thumb" src="${SIGN_IMAGES[item.cls]}" alt="ท่ามือ ${item.badge}" data-cls="${item.cls}" data-title="${item.main}">` : ''}
+      ${item.cls && SIGN_IMAGES[item.cls] ? `<img class="sign-thumb" src="${SIGN_IMAGES[item.cls]}" alt="ท่ามือ ${item.badge}" data-cls="${item.cls}" data-title="${item.main}" data-hand="${item.hand || ''}">` : ''}
     </div>
   `).join('');
 }
@@ -1056,6 +1079,8 @@ searchResults.addEventListener('click', (e) => {
   if(!img) return;
   document.getElementById('zoomImg').src = img.src;
   document.getElementById('zoomTitle').textContent = img.dataset.title || '';
+  const hd = img.dataset.hand;
+  document.getElementById('zoomHand').innerHTML = hd ? `<span class="hand-chip ${hd}" data-side="${hd === 'left' ? 'L' : 'R'}">ใช้${HAND_LABEL[hd]}</span>` : '';
   zoomOverlay.classList.add('open');
 });
 zoomOverlay.addEventListener('click', () => zoomOverlay.classList.remove('open'));
