@@ -814,10 +814,13 @@ function runModel(model, feats){
 }
 
 // Letter mode: raw (x, y, z) per landmark, same order used to collect hand_sign_data.csv
+// hand_sign_data.csv was recorded from a horizontally flipped (selfie) frame (collect_data.py: cv2.flip),
+// but the app feeds MediaPipe the un-flipped video, so x must be mirrored (1 - x) to match the training data.
+const LETTER_MIRROR_X = true;
 function classifyLetter(landmarks){
   const feats = [];
   for(const lm of landmarks){
-    feats.push(lm.x, lm.y, lm.z);
+    feats.push(LETTER_MIRROR_X ? 1 - lm.x : lm.x, lm.y, lm.z);
   }
   return runModel(LETTER_MODEL, feats);
 }
