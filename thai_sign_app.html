@@ -349,6 +349,7 @@
     flex-shrink:0; cursor:zoom-in;
     box-shadow: 0 0 0 1px var(--line);
   }
+  .sign-thumb[data-hand="left"]{ transform: scaleX(-1); }
   .zoom-overlay{
     position:fixed; inset:0; z-index:100;
     background:rgba(14,16,48,0.72);
@@ -1203,6 +1204,7 @@ searchResults.addEventListener('click', (e) => {
   const img = e.target.closest('.sign-thumb');
   if(!img) return;
   document.getElementById('zoomImg').src = img.src;
+  document.getElementById('zoomImg').style.transform = img.dataset.hand === 'left' ? 'scaleX(-1)' : '';
   document.getElementById('zoomTitle').textContent = img.dataset.title || '';
   const hd = img.dataset.hand;
   document.getElementById('zoomHand').innerHTML = hd ? `<span class="hand-chip ${hd}" data-side="${hd === 'left' ? 'L' : 'R'}">ใช้${HAND_LABEL[hd]}</span>` : '';
