@@ -633,7 +633,85 @@
   @supports (padding:max(0px)){
     header{ padding-left:max(22px, env(safe-area-inset-left)); padding-right:max(22px, env(safe-area-inset-right)); }
   }
-  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+  /* keep the bottom menu always visible */
+  nav.bottom-nav{ position:sticky; bottom:0; z-index:50; box-shadow:0 -8px 24px -16px rgba(30,33,72,0.25); }
+  .app{ min-height:100vh; min-height:100dvh; }
+  @media (min-width:900px){ .app{ overflow:clip; min-height:calc(100vh - 48px); min-height:calc(100dvh - 48px); } }
+  /* ===== Micro-interactions ===== */
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  @keyframes popIn{ 0%{ transform:scale(.6); opacity:.2; } 60%{ transform:scale(1.14); opacity:1; } 100%{ transform:scale(1); } }
+  @keyframes floatY{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+  @keyframes nudgeDown{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+  @keyframes livePulse{ 0%{ box-shadow:0 0 0 0 rgba(52,199,123,.5); } 100%{ box-shadow:0 0 0 9px rgba(52,199,123,0); } }
+  @keyframes zoomIn{ from{ opacity:0; transform:scale(.88) translateY(10px); } to{ opacity:1; transform:none; } }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+  @keyframes shimmer{ 0%{ background-position:-120% 0; } 100%{ background-position:220% 0; } }
+  @keyframes ringPing{ 0%{ transform:scale(1); opacity:.5; } 100%{ transform:scale(1.35); opacity:0; } }
+
+  .view.active > *{ animation:fadeUp .42s cubic-bezier(.2,.7,.2,1) both; }
+  .view.active > *:nth-child(2){ animation-delay:.05s; }
+  .view.active > *:nth-child(3){ animation-delay:.1s; }
+  .view.active > *:nth-child(4){ animation-delay:.15s; }
+  .view.active > *:nth-child(5){ animation-delay:.2s; }
+  .view.active > *:nth-child(n+6){ animation-delay:.25s; }
+
+  .intro-illustration{ animation:floatY 5s ease-in-out infinite; }
+  .intro-arrow-btn{ animation:nudgeDown 1.8s ease-in-out infinite; transition:transform .2s ease, box-shadow .2s ease; }
+  .intro-arrow-btn:hover{ animation-play-state:paused; transform:scale(1.1); }
+  .intro-badge{ transition:transform .2s ease; }
+  .intro-badge:hover{ transform:translateY(-3px); }
+
+  .status-dot.live{ animation:livePulse 1.6s ease-out infinite; }
+  .status-chip{ transition:background .3s ease; }
+
+  button, .nav-item{ transition:transform .15s ease, box-shadow .2s ease, background .2s ease, color .2s ease; }
+  button:active:not(:disabled){ transform:scale(.95); }
+  .stage-hint button:hover{ transform:translateY(-2px); box-shadow:0 16px 28px -10px rgba(0,0,0,.45); }
+  .stage-hint button:active{ transform:scale(.95); }
+  .mode-btn:hover:not(.active){ background:rgba(255,255,255,.55); }
+  .nav-item{ cursor:pointer; }
+  .nav-item:not(.center):hover{ color:var(--blue-deep); transform:translateY(-2px); }
+  .nav-item:not(.center):active{ transform:scale(.92); }
+  .nav-item.center:hover{ transform:translateY(-3px) scale(1.06); box-shadow:0 14px 26px -8px rgba(91,107,245,.7); }
+  .nav-item.center:active{ transform:scale(.92); }
+  .nav-item svg{ transition:transform .25s cubic-bezier(.3,1.6,.5,1); }
+  .nav-item.active:not(.center) svg{ transform:scale(1.15); }
+
+  #ringProgress{ transition:stroke-dashoffset .4s cubic-bezier(.3,.8,.3,1); }
+  .ring-letter.pop{ animation:popIn .35s cubic-bezier(.3,1.5,.5,1); }
+  .flashcard{ transition:transform .25s ease, box-shadow .25s ease; }
+  .flashcard:hover{ transform:translateY(-3px); box-shadow:0 26px 44px -22px rgba(14,16,48,.4); }
+  .flashcard-info .conf{ transition:opacity .2s ease; }
+  .ru-row{ transition:background .2s ease, transform .2s ease; }
+  .ru-row:hover{ background:rgba(255,255,255,.22); transform:translateX(3px); }
+
+  .search-item, .history-item{ transition:transform .2s ease, box-shadow .2s ease, background .2s ease; animation:fadeUp .35s cubic-bezier(.2,.7,.2,1) both; }
+  .search-item:hover, .history-item:hover{ transform:translateY(-2px); box-shadow:0 12px 22px -14px rgba(30,33,72,.35); background:#dfe2fb; }
+  .search-item:nth-child(2),.history-item:nth-child(2){ animation-delay:.03s; }
+  .search-item:nth-child(3),.history-item:nth-child(3){ animation-delay:.06s; }
+  .search-item:nth-child(4),.history-item:nth-child(4){ animation-delay:.09s; }
+  .search-item:nth-child(5),.history-item:nth-child(5){ animation-delay:.12s; }
+  .search-item:nth-child(6),.history-item:nth-child(6){ animation-delay:.15s; }
+  .search-item:nth-child(n+7),.history-item:nth-child(n+7){ animation-delay:.18s; }
+  .search-badge{ transition:transform .25s cubic-bezier(.3,1.6,.5,1); }
+  .search-item:hover .search-badge{ transform:scale(1.12) rotate(-4deg); }
+  .sign-thumb{ transition:transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .2s ease; }
+  .sign-thumb:hover{ box-shadow:0 0 0 2px var(--blue), 0 10px 18px -10px rgba(68,83,224,.6); }
+  .sign-thumb:not([data-hand="left"]):hover{ transform:scale(1.08); }
+  .sign-thumb[data-hand="left"]:hover{ transform:scaleX(-1.08) scaleY(1.08); }
+  .sign-thumb:active{ filter:brightness(.97); }
+  .search-input{ transition:border-color .2s ease, box-shadow .25s ease, background .2s ease; }
+  .search-input:focus{ box-shadow:0 0 0 4px rgba(91,107,245,.16); background:#fff; }
+  .clear-btn:hover{ background:#dcdffb; }
+
+  .zoom-overlay.open{ animation:fadeIn .2s ease both; }
+  .zoom-overlay.open .zoom-card{ animation:zoomIn .3s cubic-bezier(.3,1.3,.5,1) both; }
+
+  .stage{ transition:box-shadow .3s ease; }
+  .motif.m1{ animation:floatY 6s ease-in-out infinite; }
+  .motif.m2{ animation:floatY 4.5s ease-in-out infinite reverse; }
+
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ transition:none !important; animation:none !important; } }
   :focus-visible{ outline: 2px solid var(--blue-deep); outline-offset: 2px; }
 </style>
 </head>
@@ -1276,6 +1354,19 @@ async function begin(){
 
 startBtn.addEventListener('click', begin);
 navScan.addEventListener('click', () => { hasStarted = true; setView('home'); if(!running) begin(); });
+</script>
+<script>
+// micro-interaction: make the big prediction letter "pop" whenever it changes
+(function(){
+  const el = document.getElementById('mainLetter');
+  if(!el || !window.MutationObserver) return;
+  let last = el.textContent;
+  new MutationObserver(function(){
+    if(el.textContent === last) return;
+    last = el.textContent;
+    el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  }).observe(el, {childList:true, characterData:true, subtree:true});
+})();
 </script>
 </body>
 </html>
